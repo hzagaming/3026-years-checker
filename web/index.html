@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>3026 Years Checker</title>
+<style>
+:root{--bg:#0f1216;--card:#171b22;--line:#262d38;--txt:#e6ebf2;--dim:#8b95a5;--acc:#4f8cff}
+*{box-sizing:border-box}
+body{margin:0;min-height:100vh;display:grid;place-items:center;background:var(--bg);color:var(--txt);
+font:15px/1.6 -apple-system,BlinkMacSystemFont,'PingFang SC',sans-serif}
+.card{width:min(520px,92vw);background:var(--card);border:1px solid var(--line);border-radius:16px;padding:28px}
+h1{margin:0 0 4px;font-size:20px}
+p.sub{margin:0 0 20px;color:var(--dim);font-size:13px}
+.row{display:flex;gap:10px}
+input{flex:1;background:#0f1216;border:1px solid var(--line);color:var(--txt);border-radius:10px;padding:11px 13px;font:inherit;outline:none}
+input:focus{border-color:var(--acc)}
+button{background:var(--acc);border:none;color:#fff;border-radius:10px;padding:11px 18px;font:inherit;cursor:pointer}
+button:hover{filter:brightness(1.08)}
+.out{margin-top:18px;padding:14px;border-radius:10px;background:#0f1216;border:1px solid var(--line);
+min-height:54px;color:var(--dim);font-size:14px}
+.out b{color:var(--txt)}
+</style>
+</head>
+<body>
+<div class="card">
+  <h1>3026 Years Checker</h1>
+  <p class="sub">输入一个年份，看看它距离 3026 年有多远</p>
+  <div class="row">
+    <input id="year" type="number" value="2026" placeholder="年份">
+    <button id="go">检查</button>
+  </div>
+  <div class="out" id="out">等待输入…</div>
+</div>
+<script>
+const q = s => document.querySelector(s);
+async function check(){
+  const year = q('#year').value.trim();
+  if(!year) return;
+  try{
+    const r = await fetch('/api/check?year=' + encodeURIComponent(year));
+    const d = await r.json();
+    q('#out').innerHTML = d.error ? ('错误：' + d.error) :
+      ('<b>' + d.text + '</b><br>目标年份 3026，相差 ' + Math.abs(d.delta) + ' 年');
+  }catch(e){ q('#out').textContent = '请求失败：' + e.message; }
+}
+q('#go').onclick = check;
+q('#year').addEventListener('keydown', e => { if(e.key === 'Enter') check(); });
+check();
+</script>
+</body>
+</html>
